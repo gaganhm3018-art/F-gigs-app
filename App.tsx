@@ -2,10 +2,10 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import WelcomeScreen from './src/services/screens/WelcomeScreen';
-import AddIncomeScreen from './src/services/screens/AddIncomeScreen';
-import DashboardScreen from './src/services/screens/DashboardScreen';
-import { store } from './src/services/store/store';
+import WelcomeScreen from './src/screens/WelcomeScreen';
+import AddIncomeScreen from './src/screens/AddIncomeScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
+import { store } from './src/store/store';
 
 export type RootStackParamList = {
   Welcome: undefined;
