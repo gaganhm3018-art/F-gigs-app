@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: gig-workers-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-gigworker}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gigworkerpass}
+      POSTGRES_DB: ${DB_NAME:-gig_workers_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-gigworker}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gig-workers-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  gig-workers-network:
+    driver: bridge

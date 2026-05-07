@@ -3,16 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { loadIncomes, saveIncomes } from '../services/storage';
-import { setEntries } from '../store/incomeSlice';
-import { trainAndSaveModel, loadAndPredict } from '../ml/forecastingModel';
-import PredictionCard from '../components/PredictionCard';
-import RecentIncomeList from '../components/RecentIncomeList';
-
-export default function DashboardScreen({ navigation }: any) {
-  const entries = useSelector((state: RootState) => state.income.entries);
-  const dispatch = useDispatch();
-  const [prediction, setPrediction] = useState<number | null>(null);
+import { loadIncomes
 
   useEffect(() => {
     // Load data from storage
