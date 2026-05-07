@@ -15,9 +15,18 @@ For tax planning without bank/API integrations, this app uses a **Weighted Movin
 
 Projected annual income = weighted weekly average × 52.
 
+
+## PostgreSQL database
+A production-ready PostgreSQL schema is available in `database/schema.sql`. It maps the mobile app income fields to relational tables, seeds common gig platforms, and includes reporting views plus an annual prediction function. Apply it with:
+
+```bash
+psql "$DATABASE_URL" -f database/schema.sql
+```
+
 ## Files
 - `src/src/services/services/analytics.ts` – summary + projection model.
 - `src/src/services/services/autofill.ts` – platform and amount suggestions.
 - `src/src/services/services/csv.ts` – CSV export serializer.
 - `src/src/services/screens/AddIncomeScreen.tsx` – low-friction entry form.
 - `src/src/services/screens/DashboardScreen.tsx` – metrics overview.
+- `database/schema.sql` – PostgreSQL schema, seed platforms, reporting views, and prediction helper.
