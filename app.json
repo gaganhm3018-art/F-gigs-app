@@ -1,5 +1,6 @@
 {
   "name": "ikya_gig_workers_app",
+  "slug": "ikya_gig_workers_app",
   "displayName": "IKYA Gig Workers App",
   "android": {
     "package": "com.anonymous.ikya_gig_workers_app"
