@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
-import { aggregateWeekly } from '../ml/forecastingModel'; // reuse helper
+import { aggregateWeekly } from '../services/ml';
 
 export default function ReportsScreen() {
   const entries = useSelector((state: RootState) => state.income.entries);

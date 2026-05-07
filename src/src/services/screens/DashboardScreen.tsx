@@ -1,9 +1,22 @@
 // src/screens/DashboardScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { loadIncomes
+import { setEntries } from '../store/incomeslice';
+import { loadIncomes, saveIncomes } from '../services/storage';
+import { trainAndSaveModel, loadAndPredict } from '../services/ml';
+import PredictionCard from '../Components/predictionCard';
+import RecentIncomeList from '../Components/RecentIncomeList';
+
+interface DashboardScreenProps {
+  navigation: any; // Type this properly with React Navigation types
+}
+
+export default function DashboardScreen({ navigation }: DashboardScreenProps) {
+  const entries = useSelector((state: RootState) => state.income.entries);
+  const dispatch = useDispatch();
+  const [prediction, setPrediction] = useState<number | null>(null);
 
   useEffect(() => {
     // Load data from storage
