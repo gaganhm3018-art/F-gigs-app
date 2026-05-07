@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  phone     String?  @unique
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  incomes  Income[]
+  expenses Expense[]
+  goals    SavingsGoal[]
+  reports  FinancialReport[]
+
+  @@map("User")
+}
+
+model Income {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Float
+  source    String   // e.g., "Uber", "DoorDash", "Freelance"
+  category  String   @default("gig_work")
+  date      DateTime @db.Date
+  time      DateTime?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags   Tag[]
+
+  @@index([userId])
+  @@index([date])
+  @@index([source])
+  @@map("Income")
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Float
+  category  String   // e.g., "fuel", "maintenance", "food"
+  date      DateTime @db.Date
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("Expense")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String   @default("#000000")
+  createdAt DateTime @default(now())
+
+  // Relations
+  incomes Income[]
+
+  @@map("Tag")
+}
+
+model SavingsGoal {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  targetAmount Float
+  currentAmount Float @default(0)
+  deadline  DateTime?
+  priority  String   @default("medium") // low, medium, high
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("SavingsGoal")
+}
+
+model FinancialReport {
+  id        String   @id @default(uuid())
+  userId    String
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  totalIncome Float
+  totalExpenses Float
+  netIncome Float
+  averageDailyEarnings Float
+  reportData Json    // Store detailed breakdown as JSON
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([startDate, endDate])
+  @@map("FinancialReport")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  entity    String   // "Income", "Expense", "User", etc.
+  entityId  String
+  action    String   // "CREATE", "UPDATE", "DELETE"
+  oldValues Json?
+  newValues Json?
+  userId    String?
+  timestamp DateTime @default(now())
+
+  @@index([entityId])
+  @@index([timestamp])
+  @@map("AuditLog")
+}
