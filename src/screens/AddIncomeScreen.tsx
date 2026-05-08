@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,70 +54,141 @@ export default function AddIncomeScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Platform</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="e.g. Uber, Fiverr, DoorDash"
-        value={platform}
-        onChangeText={setPlatform}
-      />
-      {suggestions.length > 0 && (
-        <View style={styles.suggestions}>
-          {suggestions.map(s => (
-            <Text key={s} style={styles.suggestion} onPress={() => setPlatform(s)}>
-              {s}
-            </Text>
-          ))}
-        </View>
-      )}
-
-      <Text style={styles.label}>Amount ($)</Text>
-      <TextInput style={styles.input} placeholder="0.00" keyboardType="numeric" value={amount} onChangeText={setAmount} />
-      {averageSuggestion !== null && (
-        <Text style={styles.helper} onPress={() => setAmount(String(averageSuggestion))}>
-          Tap to autofill average: ${averageSuggestion}
-        </Text>
-      )}
-
-      <Text style={styles.label}>Date</Text>
-      <Button title={date.toLocaleDateString()} onPress={() => setShowDatePicker(true)} />
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          onChange={(_, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      
+      <View style={styles.card}>
+        <Text style={styles.label}>Platform</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="e.g. Uber, Fiverr, DoorDash"
+          placeholderTextColor="#aaa"
+          value={platform}
+          onChangeText={setPlatform}
         />
-      )}
+        {suggestions.length > 0 && (
+          <View style={styles.suggestions}>
+            {suggestions.map(s => (
+              <TouchableOpacity key={s} style={styles.suggestion} onPress={() => setPlatform(s)}>
+                <Text style={styles.suggestionText}>{s}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-      <Text style={styles.label}>Status</Text>
-      <Picker selectedValue={status} onValueChange={(v) => setStatus(v)}>
-        <Picker.Item label="Received" value="received" />
-        <Picker.Item label="Pending" value="pending" />
-      </Picker>
+        <Text style={styles.label}>Amount ($)</Text>
+        <TextInput 
+          style={styles.input} 
+          placeholder="0.00" 
+          placeholderTextColor="#aaa"
+          keyboardType="numeric" 
+          value={amount} 
+          onChangeText={setAmount} 
+        />
+        {averageSuggestion !== null && (
+          <TouchableOpacity onPress={() => setAmount(String(averageSuggestion))}>
+            <Text style={styles.helper}>
+              Tap to autofill average: <Text style={{fontWeight: '700'}}>${averageSuggestion.toFixed(2)}</Text>
+            </Text>
+          </TouchableOpacity>
+        )}
 
-      <Text style={styles.label}>Frequency</Text>
-      <Picker selectedValue={frequency} onValueChange={(v) => setFrequency(v)}>
-        <Picker.Item label="One time" value="one_time" />
-        <Picker.Item label="Daily" value="daily" />
-        <Picker.Item label="Weekly" value="weekly" />
-        <Picker.Item label="Fortnightly" value="fortnightly" />
-        <Picker.Item label="Monthly" value="monthly" />
-      </Picker>
+        <Text style={styles.label}>Date</Text>
+        <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.dateButtonText}>{date.toLocaleDateString()}</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={(_, selectedDate) => {
+              setShowDatePicker(Platform.OS === 'ios');
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
 
-      <Button title="Save Income" onPress={handleSave} />
-    </View>
+        <Text style={styles.label}>Status</Text>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={status} onValueChange={(v) => setStatus(v)}>
+            <Picker.Item label="Received" value="received" />
+            <Picker.Item label="Pending" value="pending" />
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Frequency</Text>
+        <View style={styles.pickerContainer}>
+          <Picker selectedValue={frequency} onValueChange={(v) => setFrequency(v)}>
+            <Picker.Item label="One time" value="one_time" />
+            <Picker.Item label="Daily" value="daily" />
+            <Picker.Item label="Weekly" value="weekly" />
+            <Picker.Item label="Fortnightly" value="fortnightly" />
+            <Picker.Item label="Monthly" value="monthly" />
+          </Picker>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Income</Text>
+      </TouchableOpacity>
+
+      <View style={{height: 40}} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  label: { fontSize: 16, fontWeight: 'bold', marginTop: 12, marginBottom: 4 },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, marginBottom: 8 },
-  helper: { color: '#2e7d32', marginBottom: 10 },
-  suggestions: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
-  suggestion: { backgroundColor: '#e0e0e0', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 4, marginRight: 8, marginBottom: 4 },
+  container: { flex: 1, backgroundColor: '#f8f9fa' },
+  content: { padding: 16 },
+  card: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 24,
+  },
+  label: { fontSize: 16, fontWeight: '700', color: '#333', marginTop: 12, marginBottom: 8 },
+  input: { 
+    borderWidth: 1, 
+    borderColor: '#e0e0e0', 
+    backgroundColor: '#fafafa',
+    borderRadius: 12, 
+    padding: 14, 
+    fontSize: 16,
+    marginBottom: 8 
+  },
+  helper: { color: '#0066cc', marginBottom: 12, fontSize: 14 },
+  suggestions: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
+  suggestion: { backgroundColor: '#e3f2fd', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 8, marginRight: 8, marginBottom: 8 },
+  suggestionText: { color: '#0066cc', fontWeight: '600' },
+  dateButton: {
+    borderWidth: 1, 
+    borderColor: '#e0e0e0', 
+    backgroundColor: '#fafafa',
+    borderRadius: 12, 
+    padding: 14, 
+    marginBottom: 8,
+    alignItems: 'center'
+  },
+  dateButtonText: { fontSize: 16, color: '#333' },
+  pickerContainer: {
+    borderWidth: 1, 
+    borderColor: '#e0e0e0', 
+    backgroundColor: '#fafafa',
+    borderRadius: 12, 
+    marginBottom: 8,
+    overflow: 'hidden'
+  },
+  saveButton: { 
+    backgroundColor: '#0066cc', 
+    paddingVertical: 16, 
+    borderRadius: 12, 
+    alignItems: 'center',
+    shadowColor: '#0066cc', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 5
+  },
+  saveButtonText: { color: '#fff', fontSize: 18, fontWeight: '700' }
 });

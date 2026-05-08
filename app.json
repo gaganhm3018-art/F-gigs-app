@@ -1,8 +1,16 @@
 {
-  "name": "ikya_gig_workers_app",
-  "slug": "ikya_gig_workers_app",
-  "displayName": "IKYA Gig Workers App",
-  "android": {
-    "package": "com.anonymous.ikya_gig_workers_app"
+  "expo": {
+    "name": "ikya_gig_workers_app",
+    "slug": "ikya_gig_workers_app",
+    "displayName": "IKYA Gig Workers App",
+    "icon": "./assets/icon.png",
+    "android": {
+      "package": "com.anonymous.ikya_gig_workers_app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9b944b09-0e05-48f2-a0c6-3e7b22451771"
+      }
+    }
   }
 }
